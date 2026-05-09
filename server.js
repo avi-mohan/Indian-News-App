@@ -93,7 +93,7 @@ Return ONLY a valid JSON object — no extra text, no markdown — in exactly th
             },
             body: JSON.stringify({
                 model: 'claude-opus-4-5',
-                max_tokens: 1200,
+                max_tokens: 2500,
                 messages: [{ role: 'user', content: prompt }]
             })
         });
@@ -109,6 +109,10 @@ Return ONLY a valid JSON object — no extra text, no markdown — in exactly th
 
     const data = await anthropicRes.json();
     const raw  = data.content?.[0]?.text || '';
+
+    if (data.stop_reason === 'max_tokens') {
+        return res.status(502).json({ error: 'Claude response was cut off. Please try again.' });
+    }
 
     const parsed = parseJSONSafely(raw);
     if (!parsed) {
