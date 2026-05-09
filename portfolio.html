@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avi Mohan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Tokens ─────────────────────────────────────────────────── */
+    :root {
+      --cream:        #F5EFE4;
+      --cream-mid:    #EDE5D4;
+      --cream-dark:   #E2D8C6;
+      --ink:          #1A1510;
+      --ink-mid:      #4A4035;
+      --ink-light:    #9A8A74;
+      --accent:       #8B3820;
+      --accent-warm:  #C06B38;
+      --border:       #D6CCBA;
+    }
+
+    /* ─── Reset & Base ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle grain overlay */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+    }
+
+    /* ─── Navigation ─────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 4rem;
+      background: rgba(245, 239, 228, 0.85);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(214, 204, 186, 0.6);
+    }
+
+    .nav-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1rem;
+      font-weight: 400;
+      letter-spacing: 0.01em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ─── Hero ───────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 4rem 7rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Warm radial bloom, top-right */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -10%;
+      right: -5%;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle at center,
+        rgba(192, 107, 56, 0.09) 0%,
+        rgba(192, 107, 56, 0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .hero-eyebrow-line {
+      width: 2.5rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .hero-eyebrow-text {
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .hero-name {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(5.5rem, 13vw, 11rem);
+      font-weight: 700;
+      line-height: 0.88;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 2.75rem;
+    }
+
+    .hero-tagline {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1.15rem, 2.5vw, 1.75rem);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--ink-mid);
+      max-width: 580px;
+      line-height: 1.45;
+    }
+
+    /* Decorative issue-number element */
+    .hero-meta {
+      position: absolute;
+      right: 4rem;
+      bottom: 7rem;
+      text-align: right;
+    }
+
+    .hero-meta-number {
+      font-family: 'Fraunces', serif;
+      font-size: 6rem;
+      font-weight: 700;
+      color: var(--cream-dark);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      user-select: none;
+    }
+
+    .hero-meta-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    /* ─── Shared Section Scaffolding ─────────────────────────────── */
+    .section {
+      padding: 8rem 4rem;
+    }
+
+    .section-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-eyebrow-line {
+      width: 1.75rem;
+      height: 1px;
+      background: var(--accent);
+    }
+
+    .section-eyebrow-text {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .section-heading {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(2.25rem, 5vw, 3.75rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 4rem;
+    }
+
+    /* ─── About ──────────────────────────────────────────────────── */
+    .about {
+      background: var(--cream-mid);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 7rem;
+      align-items: start;
+    }
+
+    .about-text p {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      color: var(--ink-mid);
+      margin-bottom: 1.5rem;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .about-aside { padding-top: 0.5rem; }
+
+    .pull-quote {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--accent);
+      line-height: 1.4;
+      padding-left: 1.5rem;
+      border-left: 2px solid var(--accent);
+      margin-bottom: 3rem;
+    }
+
+    .facts {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .fact {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 1rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .fact:first-child { border-top: 1px solid var(--border); }
+
+    .fact-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      font-weight: 500;
+      padding-top: 0.1rem;
+    }
+
+    .fact-value {
+      font-size: 0.9rem;
+      color: var(--ink-mid);
+      line-height: 1.5;
+    }
+
+    /* ─── Projects ───────────────────────────────────────────────── */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem;
+    }
+
+    .card {
+      background: var(--cream-mid);
+      border: 1px solid var(--border);
+      padding: 2.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    /* Top accent bar */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-warm));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 50px rgba(26, 21, 16, 0.1);
+    }
+
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-number {
+      font-family: 'Fraunces', serif;
+      font-size: 3.5rem;
+      font-weight: 700;
+      color: var(--cream-dark);
+      line-height: 1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+      user-select: none;
+    }
+
+    .card-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.55rem;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 0.85rem;
+      line-height: 1.2;
+    }
+
+    .card-desc {
+      font-size: 0.92rem;
+      color: var(--ink-mid);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+    }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 2.25rem;
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.3rem 0.8rem;
+      border: 1px solid var(--border);
+      color: var(--ink-light);
+      background: transparent;
+    }
+
+    .card-link {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      transition: gap 0.2s;
+    }
+
+    .card-link:hover { gap: 1rem; }
+
+    /* ─── Contact ────────────────────────────────────────────────── */
+    .contact {
+      background: var(--ink);
+    }
+
+    .contact .section-eyebrow-line { background: var(--accent-warm); }
+    .contact .section-eyebrow-text { color: var(--accent-warm); }
+    .contact .section-heading { color: var(--cream); }
+
+    .contact-subhead {
+      font-family: 'Fraunces', serif;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 300;
+      font-style: italic;
+      color: rgba(245, 239, 228, 0.5);
+      max-width: 480px;
+      line-height: 1.55;
+      margin-top: -2.5rem;
+      margin-bottom: 4.5rem;
+    }
+
+    .contact-list {
+      display: flex;
+      flex-direction: column;
+      max-width: 640px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 1.35rem 0;
+      border-bottom: 1px solid rgba(245, 239, 228, 0.08);
+      text-decoration: none;
+      color: var(--cream);
+      transition: padding-left 0.25s ease;
+    }
+
+    .contact-item:first-child { border-top: 1px solid rgba(245, 239, 228, 0.08); }
+    .contact-item:hover { padding-left: 0.6rem; }
+
+    .contact-icon {
+      width: 2.75rem;
+      height: 2.75rem;
+      border: 1px solid rgba(245, 239, 228, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--accent-warm);
+      flex-shrink: 0;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .contact-item:hover .contact-icon {
+      background: rgba(192, 107, 56, 0.12);
+      border-color: rgba(192, 107, 56, 0.3);
+    }
+
+    .contact-meta { flex: 1; }
+
+    .contact-platform {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(245, 239, 228, 0.35);
+      margin-bottom: 0.15rem;
+    }
+
+    .contact-handle {
+      font-size: 0.97rem;
+      color: rgba(245, 239, 228, 0.9);
+    }
+
+    .contact-arrow {
+      color: rgba(245, 239, 228, 0.2);
+      font-size: 1rem;
+      transition: transform 0.2s, color 0.2s;
+    }
+
+    .contact-item:hover .contact-arrow {
+      transform: translateX(5px);
+      color: var(--accent-warm);
+    }
+
+    /* ─── Footer ─────────────────────────────────────────────────── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(245, 239, 228, 0.06);
+      padding: 1.75rem 4rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-name {
+      font-family: 'Fraunces', serif;
+      font-size: 0.85rem;
+      color: rgba(245, 239, 228, 0.3);
+      font-weight: 400;
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      color: rgba(245, 239, 228, 0.18);
+    }
+
+    /* ─── Responsive Baseline ────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 2rem; }
+      .hero { padding: 0 2rem 6rem; }
+      .hero-meta { display: none; }
+      .section { padding: 6rem 2rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 4rem; }
+      .projects-grid { grid-template-columns: 1fr; }
+      footer { padding: 1.5rem 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ─────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-name">Avi Mohan</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-line"></div>
+        <span class="hero-eyebrow-text">Data Engineer · Builder · Nomad at heart</span>
+      </div>
+      <h1 class="hero-name">Avi<br>Mohan.</h1>
+      <p class="hero-tagline">
+        I've called seven countries home.<br>
+        Now I build systems that make sense of the world.
+      </p>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-meta-number">07</div>
+      <div class="hero-meta-label">countries</div>
+    </div>
+  </header>
+
+  <!-- ─── ABOUT ────────────────────────────────────────────────────── -->
+  <section class="section about" id="about">
+    <div class="section-inner">
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <span class="section-eyebrow-text">About</span>
+      </div>
+      <h2 class="section-heading">Seven countries.<br>One throughline.</h2>
+      <div class="about-grid">
+        <div class="about-text">
+          <p>
+            Growing up as a diplomat's kid means you spend your formative years learning how to become a local in places where you'll always be slightly foreign. I did this seven times over — seven schools, seven sets of friends, seven versions of myself adapting to somewhere new. It was disorienting and wonderful in equal measure, and it turned out to be the best education I never planned for.
+          </p>
+          <p>
+            These days I work as a data engineer. I build pipelines, untangle schemas, and figure out how to make messy information behave. It's not so different from what I learned as a kid: find the underlying system, understand its logic, make it work. I just do it with SQL now instead of a phrase book.
+          </p>
+          <p>
+            I speak a few languages with varying levels of confidence. I play guitar — my neighbors have developed strong opinions about this. I take fitness seriously. And I have watched certain romcoms more times than I will admit in a professional context, because I think kindness and warmth are seriously underrated and stories that celebrate them deserve more credit.
+          </p>
+          <p>
+            The thing growing up everywhere teaches you is that most people, everywhere, are trying to do the same things: build something meaningful, connect with the people around them, and figure out what's for dinner. I find that endlessly reassuring.
+          </p>
+        </div>
+        <div class="about-aside">
+          <blockquote class="pull-quote">
+            "The best thing about growing up everywhere is that you stop being surprised by new beginnings."
+          </blockquote>
+          <div class="facts">
+            <div class="fact">
+              <span class="fact-label">Countries lived in</span>
+              <span class="fact-value">Seven (and counting)</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Current craft</span>
+              <span class="fact-value">Data Engineering</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Languages</span>
+              <span class="fact-value">Several, with varying confidence</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Outside of work</span>
+              <span class="fact-value">Guitar, fitness, good films</span>
+            </div>
+            <div class="fact">
+              <span class="fact-label">Strongly held belief</span>
+              <span class="fact-value">Kindness is a superpower</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS ─────────────────────────────────────────────────── -->
+  <section class="section" id="projects">
+    <div class="section-inner">
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <span class="section-eyebrow-text">Work</span>
+      </div>
+      <h2 class="section-heading">Things I've built.</h2>
+      <div class="projects-grid">
+
+        <div class="card">
+          <div class="card-number">01</div>
+          <h3 class="card-title">Project One</h3>
+          <p class="card-desc">
+            A brief description of what this project does, the problem it solves, and why it was worth building. What was the before state? What's better now? Replace with your actual project details.
+          </p>
+          <div class="card-tags">
+            <span class="tag">Python</span>
+            <span class="tag">Data Pipeline</span>
+            <span class="tag">SQL</span>
+          </div>
+          <a href="#" class="card-link">View Project →</a>
+        </div>
+
+        <div class="card">
+          <div class="card-number">02</div>
+          <h3 class="card-title">Project Two</h3>
+          <p class="card-desc">
+            A brief description of what this project does, the problem it solves, and why it was worth building. What was the before state? What's better now? Replace with your actual project details.
+          </p>
+          <div class="card-tags">
+            <span class="tag">dbt</span>
+            <span class="tag">Airflow</span>
+            <span class="tag">Analytics</span>
+          </div>
+          <a href="#" class="card-link">View Project →</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ──────────────────────────────────────────────────── -->
+  <section class="section contact" id="contact">
+    <div class="section-inner">
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <span class="section-eyebrow-text">Contact</span>
+      </div>
+      <h2 class="section-heading">Let's talk.</h2>
+      <p class="contact-subhead">
+        Whether it's a project, a question, or just a good conversation — I'm not hard to find.
+      </p>
+      <div class="contact-list">
+
+        <a href="https://github.com/avi-mohan" class="contact-item" target="_blank" rel="noopener noreferrer">
+          <div class="contact-icon">GH</div>
+          <div class="contact-meta">
+            <div class="contact-platform">GitHub</div>
+            <div class="contact-handle">github.com/avi-mohan</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+
+        <a href="#" class="contact-item">
+          <div class="contact-icon">LI</div>
+          <div class="contact-meta">
+            <div class="contact-platform">LinkedIn</div>
+            <div class="contact-handle">Add your LinkedIn URL</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+
+        <a href="mailto:avi.mohan19@gmail.com" class="contact-item">
+          <div class="contact-icon">✉</div>
+          <div class="contact-meta">
+            <div class="contact-platform">Email</div>
+            <div class="contact-handle">avi.mohan19@gmail.com</div>
+          </div>
+          <span class="contact-arrow">→</span>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ───────────────────────────────────────────────────── -->
+  <footer>
+    <span class="footer-name">Avi Mohan</span>
+    <span class="footer-copy">© 2026</span>
+  </footer>
+
+</body>
+</html>
