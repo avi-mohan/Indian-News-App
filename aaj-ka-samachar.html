@@ -410,11 +410,12 @@
         }
 
         .radio-station-name {
+            font-family: 'Noto Sans Devanagari', 'Lora', Georgia, serif;
             font-size: 2rem;
             font-weight: 700;
             color: var(--saffron);
             display: block;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
         }
 
         .radio-station-hindi {
@@ -626,9 +627,8 @@
 
 <section class="radio-section">
     <div class="radio-inner">
-        <span class="radio-station-name">Vividh Bharati</span>
-        <span class="radio-station-hindi">आकाशवाणी विविध भारती</span>
-        <span class="radio-tagline">Classic Hindi Film Songs &bull; Live Radio</span>
+        <span class="radio-station-name">पुराने गाने &bull; Retro Hits Radio</span>
+        <span class="radio-tagline">60s &middot; 70s &middot; 80s Bollywood Classics</span>
 
         <div class="radio-btn-wrap" id="radio-btn-wrap">
             <button class="radio-play-btn" id="radio-play-btn" onclick="toggleRadio()" aria-label="Play Vividh Bharati">
@@ -850,44 +850,70 @@
     }
 
     // ── Radio ─────────────────────────────────────────────────────────────────
-    const RADIO_STREAM = 'https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8';
-    const PLAY_PATH    = '<polygon points="6,3 20,12 6,21"/>';
-    const STOP_PATH    = '<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
+    const RADIO_STREAMS = [
+        { url: 'https://puranijeanshdliv-lh.akamaihd.net/i/PuraniJeansHDLive_1_1@334555/master.m3u8', type: 'hls' },
+        { url: 'http://prclive1.listenon.in:8834/', type: 'direct' }
+    ];
+    const PLAY_PATH = '<polygon points="6,3 20,12 6,21"/>';
+    const STOP_PATH = '<rect x="5" y="4" width="5" height="16"/><rect x="14" y="4" width="5" height="16"/>';
 
     let radioAudio   = null;
     let hls          = null;
     let radioRunning = false;
 
     function toggleRadio() {
-        if (!radioAudio) initRadio();
-        radioRunning ? stopRadio() : startRadio();
+        radioRunning ? stopRadio() : tryStream(0);
     }
 
-    function initRadio() {
-        radioAudio = new Audio();
-        radioAudio.addEventListener('playing', () => setRadioState('playing'));
-        radioAudio.addEventListener('waiting', () => setRadioStatus('Buffering…'));
-        radioAudio.addEventListener('error',   () => { setRadioState('stopped'); setRadioStatus('Could not load stream. Please try again.'); });
+    function tryStream(index) {
+        if (index >= RADIO_STREAMS.length) {
+            setRadioState('stopped');
+            setRadioStatus('No streams available. Please try again later.');
+            return;
+        }
 
-        if (typeof Hls !== 'undefined' && Hls.isSupported()) {
-            hls = new Hls({ lowLatencyMode: true });
-            hls.loadSource(RADIO_STREAM);
-            hls.attachMedia(radioAudio);
-        } else if (radioAudio.canPlayType('application/vnd.apple.mpegurl')) {
-            radioAudio.src = RADIO_STREAM;
+        const stream = RADIO_STREAMS[index];
+        setRadioStatus(index === 0 ? 'Connecting…' : 'Trying fallback stream…');
+
+        if (hls) { hls.destroy(); hls = null; }
+        if (!radioAudio) {
+            radioAudio = new Audio();
+            radioAudio.addEventListener('playing', () => setRadioState('playing'));
+            radioAudio.addEventListener('waiting', () => { if (radioRunning) setRadioStatus('Buffering…'); });
         } else {
-            setRadioStatus('HLS streaming not supported in this browser.');
-            radioAudio = null;
+            radioAudio.pause();
+            radioAudio.src = '';
+            radioAudio.load();
+        }
+
+        // Guard so only the first failure advances to the next stream
+        let advanced = false;
+        const advance = () => { if (!advanced) { advanced = true; tryStream(index + 1); } };
+
+        if (stream.type === 'hls') {
+            if (typeof Hls !== 'undefined' && Hls.isSupported()) {
+                hls = new Hls({ lowLatencyMode: true });
+                hls.loadSource(stream.url);
+                hls.attachMedia(radioAudio);
+                hls.once(Hls.Events.MANIFEST_PARSED, () => radioAudio.play().catch(advance));
+                hls.on(Hls.Events.ERROR, (_, d) => { if (d.fatal) { hls.destroy(); hls = null; advance(); } });
+            } else if (radioAudio.canPlayType('application/vnd.apple.mpegurl')) {
+                radioAudio.src = stream.url;
+                radioAudio.addEventListener('error', advance, { once: true });
+                radioAudio.play().catch(advance);
+            } else {
+                advance();
+            }
+        } else {
+            radioAudio.src = stream.url;
+            radioAudio.addEventListener('error', advance, { once: true });
+            radioAudio.play().catch(advance);
         }
     }
 
-    function startRadio() {
-        setRadioStatus('Connecting…');
-        radioAudio.play().catch(() => setRadioStatus('Playback blocked — tap the button to try again.'));
-    }
-
     function stopRadio() {
-        radioAudio.pause();
+        if (hls) { hls.destroy(); hls = null; }
+        if (radioAudio) { radioAudio.pause(); radioAudio.src = ''; radioAudio.load(); }
         setRadioState('stopped');
     }
 
@@ -899,7 +925,7 @@
         btn.classList.toggle('streaming', radioRunning);
         wrap.classList.toggle('playing',  radioRunning);
         svg.innerHTML = radioRunning ? STOP_PATH : PLAY_PATH;
-        if (radioRunning) setRadioStatus('Live &bull; Vividh Bharati');
+        if (radioRunning) setRadioStatus('Live &bull; Retro Hits Radio');
         else              setRadioStatus('Press to tune in');
     }
 
